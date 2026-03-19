@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/your/content-folder"
+      ],
+      "description": "Access blog posts and save generated content pieces."
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"
+      },
+      "description": "Research trending topics and hashtags for content optimization."
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-fetch"
+      ],
+      "description": "Fetch blog post content from URLs for repurposing."
+    }
+  }
+}

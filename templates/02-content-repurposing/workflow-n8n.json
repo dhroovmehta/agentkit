@@ -1,0 +1,135 @@
+{
+  "name": "Content Repurposing Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "repurpose-content",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "New Blog Post Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.blog_url}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fetch-blog",
+      "name": "Fetch Blog Post Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a content repurposing specialist. Take the following blog post and generate platform-optimized content pieces following your system prompt format.\n\nBlog Post:\n{{$json.data}}\n\nGenerate: LinkedIn post, Twitter/X thread, newsletter section, Instagram caption, YouTube short script, and pull quotes.",
+        "options": {
+          "maxTokensToSample": 4000,
+          "temperature": 0.4
+        }
+      },
+      "id": "generate-content",
+      "name": "Generate All Content Pieces (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "credentials": {
+        "anthropicApi": {
+          "id": "CONFIGURE_ANTHROPIC_CREDENTIALS",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.text;\n\n// Parse the generated content into separate pieces\nconst sections = text.split(/(?=## \\d\\.|### \\d\\.)/g);\n\nreturn [{\n  json: {\n    full_output: text,\n    generated_at: new Date().toISOString(),\n    source_url: $('New Blog Post Webhook').first().json.blog_url\n  }\n}];"
+      },
+      "id": "parse-content",
+      "name": "Parse Content Pieces",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Content Calendar"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        },
+        "options": {}
+      },
+      "id": "save-to-sheet",
+      "name": "Save to Content Calendar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [900, 200],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CONFIGURE_GOOGLE_CREDENTIALS",
+          "name": "Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=Content Repurposed: {{$json.source_url}}",
+        "emailType": "text",
+        "message": "={{$json.full_output}}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Email Content Pieces",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 400],
+      "credentials": {
+        "smtp": {
+          "id": "CONFIGURE_SMTP_CREDENTIALS",
+          "name": "SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "New Blog Post Webhook": {
+      "main": [[{"node": "Fetch Blog Post Content", "type": "main", "index": 0}]]
+    },
+    "Fetch Blog Post Content": {
+      "main": [[{"node": "Generate All Content Pieces (Claude)", "type": "main", "index": 0}]]
+    },
+    "Generate All Content Pieces (Claude)": {
+      "main": [[{"node": "Parse Content Pieces", "type": "main", "index": 0}]]
+    },
+    "Parse Content Pieces": {
+      "main": [[
+        {"node": "Save to Content Calendar", "type": "main", "index": 0},
+        {"node": "Email Content Pieces", "type": "main", "index": 0}
+      ]]
+    }
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "content", "id": "3"}]
+}

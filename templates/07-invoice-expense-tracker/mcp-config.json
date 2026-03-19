@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/receipts"],
+      "description": "Access receipt files, invoices, and financial documents."
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-google-drive"],
+      "env": {"GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"},
+      "description": "Access Google Sheets for expense tracking spreadsheet."
+    }
+  }
+}

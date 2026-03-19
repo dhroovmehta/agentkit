@@ -1,0 +1,85 @@
+{
+  "name": "Social Media Manager - Weekly Content Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {"interval": [{"field": "cronExpression", "expression": "0 8 * * 0"}]}
+      },
+      "id": "weekly-trigger",
+      "name": "Every Sunday 8AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [{"name": "q", "value": "CONFIGURE_YOUR_INDUSTRY trending topics this week"}, {"name": "count", "value": "10"}]},
+        "options": {}
+      },
+      "id": "trending-topics",
+      "name": "Search Trending Topics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 300],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a social media manager. Generate this week's content calendar following the Social Media Manager system prompt.\n\nBrand: CONFIGURE_YOUR_BRAND\nIndustry: CONFIGURE_YOUR_INDUSTRY\nTrending topics this week:\n{{$json.data}}\n\nGenerate: Full weekly content calendar with all posts written out for LinkedIn, Twitter/X, and Instagram.",
+        "options": {"maxTokensToSample": 4000, "temperature": 0.5}
+      },
+      "id": "generate-calendar",
+      "name": "Generate Content Calendar (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Content Calendar"},
+        "columns": {"mappingMode": "autoMapInputData"},
+        "options": {}
+      },
+      "id": "save-calendar",
+      "name": "Save to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [700, 200],
+      "credentials": {"googleSheetsOAuth2Api": {"id": "CONFIGURE_GOOGLE_CREDENTIALS", "name": "Google Sheets"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=Content Calendar — Week of {{new Date().toLocaleDateString()}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-calendar",
+      "name": "Email Content Calendar",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [700, 400],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    }
+  ],
+  "connections": {
+    "Every Sunday 8AM": {"main": [[{"node": "Search Trending Topics", "type": "main", "index": 0}]]},
+    "Search Trending Topics": {"main": [[{"node": "Generate Content Calendar (Claude)", "type": "main", "index": 0}]]},
+    "Generate Content Calendar (Claude)": {"main": [[
+      {"node": "Save to Google Sheet", "type": "main", "index": 0},
+      {"node": "Email Content Calendar", "type": "main", "index": 0}
+    ]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "marketing", "id": "7"}]
+}

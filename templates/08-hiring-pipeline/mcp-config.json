@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/hiring-data"],
+      "description": "Access resumes, job descriptions, and hiring pipeline files."
+    },
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-gmail"],
+      "env": {"GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"},
+      "description": "Process application emails and send communications."
+    },
+    "google-calendar": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-google-calendar"],
+      "env": {"GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"},
+      "description": "Schedule interviews and check availability."
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-google-drive"],
+      "env": {"GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"},
+      "description": "Access Google Sheets for pipeline tracking."
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "name": "Customer Support Auto-Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [{"mode": "everyMinute", "minute": 5}]
+        },
+        "filters": {
+          "readStatus": "unread",
+          "receivedAfter": "={{ $now.minus(1, 'hour').toISO() }}"
+        }
+      },
+      "id": "email-trigger",
+      "name": "Check Support Inbox (Every 5 Min)",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CONFIGURE_GMAIL_CREDENTIALS",
+          "name": "Gmail Support Inbox"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a customer support classifier. Analyze this email and return a JSON response:\n\nFrom: {{$json.from}}\nSubject: {{$json.subject}}\nBody: {{$json.text}}\n\nReturn ONLY valid JSON:\n{\n  \"category\": \"bug_report|feature_request|billing|general_inquiry|urgent\",\n  \"urgency\": \"P1|P2|P3|P4\",\n  \"sentiment\": \"positive|neutral|frustrated|angry\",\n  \"churn_risk\": true/false,\n  \"needs_human\": true/false,\n  \"summary\": \"one sentence summary\"\n}",
+        "options": {
+          "maxTokensToSample": 500,
+          "temperature": 0.1
+        }
+      },
+      "id": "classify-email",
+      "name": "Classify Email (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "credentials": {
+        "anthropicApi": {
+          "id": "CONFIGURE_ANTHROPIC_CREDENTIALS",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.needs_human}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-escalation",
+      "name": "Needs Human Review?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a customer support agent. Draft a response to this email following the support auto-responder system prompt guidelines.\n\nClassification: {{$json.category}} | {{$json.urgency}} | Sentiment: {{$json.sentiment}}\n\nOriginal email:\nFrom: {{$('Check Support Inbox (Every 5 Min)').item.json.from}}\nSubject: {{$('Check Support Inbox (Every 5 Min)').item.json.subject}}\nBody: {{$('Check Support Inbox (Every 5 Min)').item.json.text}}\n\nDraft a professional, empathetic response. Do NOT mention you are AI.",
+        "options": {
+          "maxTokensToSample": 1000,
+          "temperature": 0.3
+        }
+      },
+      "id": "draft-response",
+      "name": "Draft Auto-Response (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 200],
+      "credentials": {
+        "anthropicApi": {
+          "id": "CONFIGURE_ANTHROPIC_CREDENTIALS",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$('Check Support Inbox (Every 5 Min)').item.json.from}}",
+        "subject": "=Re: {{$('Check Support Inbox (Every 5 Min)').item.json.subject}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-response",
+      "name": "Send Auto-Response",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 200],
+      "credentials": {
+        "smtp": {
+          "id": "CONFIGURE_SMTP_CREDENTIALS",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_SUPPORT_LEAD@example.com",
+        "subject": "=[ESCALATED] {{$json.category}} | {{$json.urgency}} — {{$('Check Support Inbox (Every 5 Min)').item.json.subject}}",
+        "emailType": "text",
+        "message": "ESCALATED TICKET\n\nCategory: {{$json.category}}\nUrgency: {{$json.urgency}}\nSentiment: {{$json.sentiment}}\nChurn Risk: {{$json.churn_risk}}\nSummary: {{$json.summary}}\n\n---\nOriginal Email:\nFrom: {{$('Check Support Inbox (Every 5 Min)').item.json.from}}\nSubject: {{$('Check Support Inbox (Every 5 Min)').item.json.subject}}\nBody: {{$('Check Support Inbox (Every 5 Min)').item.json.text}}",
+        "options": {}
+      },
+      "id": "escalate-email",
+      "name": "Escalate to Human",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [700, 450],
+      "credentials": {
+        "smtp": {
+          "id": "CONFIGURE_SMTP_CREDENTIALS",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Support Log"},
+        "columns": {"mappingMode": "autoMapInputData"},
+        "options": {}
+      },
+      "id": "log-ticket",
+      "name": "Log to Support Tracker",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [900, 450],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CONFIGURE_GOOGLE_CREDENTIALS",
+          "name": "Google Sheets"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Check Support Inbox (Every 5 Min)": {
+      "main": [[{"node": "Classify Email (Claude)", "type": "main", "index": 0}]]
+    },
+    "Classify Email (Claude)": {
+      "main": [[{"node": "Needs Human Review?", "type": "main", "index": 0}]]
+    },
+    "Needs Human Review?": {
+      "main": [
+        [{"node": "Escalate to Human", "type": "main", "index": 0}],
+        [{"node": "Draft Auto-Response (Claude)", "type": "main", "index": 0}]
+      ]
+    },
+    "Draft Auto-Response (Claude)": {
+      "main": [[
+        {"node": "Send Auto-Response", "type": "main", "index": 0},
+        {"node": "Log to Support Tracker", "type": "main", "index": 0}
+      ]]
+    },
+    "Escalate to Human": {
+      "main": [[{"node": "Log to Support Tracker", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "support", "id": "4"}]
+}

@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-brave-search"],
+      "env": {"BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"},
+      "description": "Search for competitor news, industry updates, and market trends."
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-fetch"],
+      "description": "Fetch competitor websites, job boards, and news articles."
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/intel-data"],
+      "description": "Access competitor watch list, previous reports, and configuration files."
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "name": "Weekly Business Intelligence Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {"interval": [{"field": "cronExpression", "expression": "0 6 * * 1"}]}
+      },
+      "id": "weekly-trigger",
+      "name": "Every Monday 6AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [{"name": "q", "value": "CONFIGURE_YOUR_INDUSTRY news this week"}, {"name": "count", "value": "10"}]},
+        "options": {}
+      },
+      "id": "search-news",
+      "name": "Search Industry News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 200],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [{"name": "q", "value": "CONFIGURE_COMPETITOR_1 OR CONFIGURE_COMPETITOR_2 news update"}, {"name": "count", "value": "10"}]},
+        "options": {}
+      },
+      "id": "search-competitors",
+      "name": "Search Competitor News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 400],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {"values": []},
+        "options": {}
+      },
+      "id": "merge-research",
+      "name": "Merge Research Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a business intelligence analyst. Generate this week's intelligence report following the BI Report system prompt format.\n\nIndustry News Results:\n{{$json.news_data}}\n\nCompetitor Search Results:\n{{$json.competitor_data}}\n\nGenerate the full weekly BI report with all 6 sections.",
+        "options": {"maxTokensToSample": 4000, "temperature": 0.3}
+      },
+      "id": "generate-report",
+      "name": "Generate BI Report (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=Weekly Intelligence Report — {{new Date().toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-report",
+      "name": "Email Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 300],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    }
+  ],
+  "connections": {
+    "Every Monday 6AM": {"main": [[
+      {"node": "Search Industry News", "type": "main", "index": 0},
+      {"node": "Search Competitor News", "type": "main", "index": 0}
+    ]]},
+    "Search Industry News": {"main": [[{"node": "Merge Research Data", "type": "main", "index": 0}]]},
+    "Search Competitor News": {"main": [[{"node": "Merge Research Data", "type": "main", "index": 1}]]},
+    "Merge Research Data": {"main": [[{"node": "Generate BI Report (Claude)", "type": "main", "index": 0}]]},
+    "Generate BI Report (Claude)": {"main": [[{"node": "Email Report", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "analytics", "id": "6"}]
+}

@@ -1,0 +1,118 @@
+{
+  "name": "Sales Outreach Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Leads"},
+        "filters": {"conditions": [{"lookupValue": "pending", "lookupColumn": "status"}]},
+        "options": {}
+      },
+      "id": "read-leads",
+      "name": "Read Pending Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [100, 300],
+      "credentials": {"googleSheetsOAuth2Api": {"id": "CONFIGURE_GOOGLE_CREDENTIALS", "name": "Google Sheets"}}
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [{"name": "q", "value": "={{$json.company}} {{$json.contact_name}} news"}, {"name": "count", "value": "5"}]},
+        "options": {}
+      },
+      "id": "research-company",
+      "name": "Research Company",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 300],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a B2B sales outreach specialist. Research the following lead and generate a personalized email sequence.\n\nCompany: {{$json.company}}\nContact: {{$json.contact_name}} — {{$json.title}}\nEmail: {{$json.email}}\nIndustry: {{$json.industry}}\n\nResearch findings:\n{{$json.research_results}}\n\nOur product: [CONFIGURE: Describe your product/service here]\n\nGenerate: Lead research brief + 4-email sequence (first touch + 3 follow-ups).",
+        "options": {"maxTokensToSample": 2000, "temperature": 0.4}
+      },
+      "id": "generate-emails",
+      "name": "Generate Email Sequence (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$('Read Pending Leads').item.json.email}}",
+        "subject": "={{$json.subject}}",
+        "emailType": "text",
+        "message": "={{$json.email_1_body}}",
+        "options": {}
+      },
+      "id": "send-email-1",
+      "name": "Send First Touch Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [700, 200],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "days"
+      },
+      "id": "wait-3-days",
+      "name": "Wait 3 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$('Read Pending Leads').item.json.email}}",
+        "subject": "=Re: {{$json.subject}}",
+        "emailType": "text",
+        "message": "={{$json.follow_up_1_body}}",
+        "options": {}
+      },
+      "id": "send-follow-up-1",
+      "name": "Send Follow-Up 1",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1100, 200],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Leads"},
+        "columns": {"mappingMode": "defineBelow", "value": {"status": "emailed", "first_email_sent": "={{new Date().toISOString()}}"}},
+        "options": {}
+      },
+      "id": "update-status",
+      "name": "Update Lead Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [700, 450],
+      "credentials": {"googleSheetsOAuth2Api": {"id": "CONFIGURE_GOOGLE_CREDENTIALS", "name": "Google Sheets"}}
+    }
+  ],
+  "connections": {
+    "Read Pending Leads": {"main": [[{"node": "Research Company", "type": "main", "index": 0}]]},
+    "Research Company": {"main": [[{"node": "Generate Email Sequence (Claude)", "type": "main", "index": 0}]]},
+    "Generate Email Sequence (Claude)": {"main": [[
+      {"node": "Send First Touch Email", "type": "main", "index": 0},
+      {"node": "Update Lead Status", "type": "main", "index": 0}
+    ]]},
+    "Send First Touch Email": {"main": [[{"node": "Wait 3 Days", "type": "main", "index": 0}]]},
+    "Wait 3 Days": {"main": [[{"node": "Send Follow-Up 1", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "sales", "id": "5"}]
+}

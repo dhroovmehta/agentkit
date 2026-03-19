@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-brave-search"],
+      "env": {"BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"},
+      "description": "Research keywords, analyze competitor content, and find sources."
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-fetch"],
+      "description": "Fetch competitor articles for content analysis."
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/content-folder"],
+      "description": "Access content calendar, existing articles, and save new drafts."
+    }
+  }
+}

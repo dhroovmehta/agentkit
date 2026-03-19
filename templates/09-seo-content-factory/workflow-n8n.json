@@ -1,0 +1,104 @@
+{
+  "name": "SEO Content Factory",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "seo-content",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "New Content Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [{"name": "q", "value": "={{$json.keyword}}"}, {"name": "count", "value": "10"}]},
+        "options": {}
+      },
+      "id": "keyword-research",
+      "name": "Search Keyword & Competitors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 200],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [{"name": "q", "value": "={{$json.keyword}} site:reddit.com OR site:quora.com questions"}, {"name": "count", "value": "5"}]},
+        "options": {}
+      },
+      "id": "paa-research",
+      "name": "Search Questions People Ask",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 400],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {"values": []},
+        "options": {}
+      },
+      "id": "merge-research",
+      "name": "Merge Research",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are an SEO content strategist. Complete the full 5-stage SEO content pipeline for this keyword.\n\nSeed keyword: {{$('New Content Request').item.json.keyword}}\nTarget audience: {{$('New Content Request').item.json.audience}}\n\nSearch results:\n{{$json.serp_data}}\n\nQuestions people ask:\n{{$json.paa_data}}\n\nGenerate: keyword research, competitor analysis, outline, full article draft, and SEO checklist.",
+        "options": {"maxTokensToSample": 8000, "temperature": 0.4}
+      },
+      "id": "generate-article",
+      "name": "Generate SEO Article (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 300],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=SEO Article Ready: {{$('New Content Request').item.json.keyword}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-article",
+      "name": "Email Article Draft",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 300],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    }
+  ],
+  "connections": {
+    "New Content Request": {"main": [[
+      {"node": "Search Keyword & Competitors", "type": "main", "index": 0},
+      {"node": "Search Questions People Ask", "type": "main", "index": 0}
+    ]]},
+    "Search Keyword & Competitors": {"main": [[{"node": "Merge Research", "type": "main", "index": 0}]]},
+    "Search Questions People Ask": {"main": [[{"node": "Merge Research", "type": "main", "index": 1}]]},
+    "Merge Research": {"main": [[{"node": "Generate SEO Article (Claude)", "type": "main", "index": 0}]]},
+    "Generate SEO Article (Claude)": {"main": [[{"node": "Email Article Draft", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "seo", "id": "10"}]
+}

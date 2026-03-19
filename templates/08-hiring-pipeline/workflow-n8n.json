@@ -1,0 +1,96 @@
+{
+  "name": "Hiring Pipeline Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {"item": [{"mode": "everyMinute", "minute": 30}]},
+        "filters": {"readStatus": "unread", "subject": "application OR resume OR apply"}
+      },
+      "id": "email-trigger",
+      "name": "Check for Applications",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300],
+      "credentials": {"gmailOAuth2": {"id": "CONFIGURE_GMAIL_CREDENTIALS", "name": "Gmail"}}
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a hiring pipeline manager. Screen this application using the 30-point rubric.\n\nJob Description: CONFIGURE_JOB_DESCRIPTION_HERE\n\nApplication:\nFrom: {{$json.from}}\nSubject: {{$json.subject}}\nBody: {{$json.text}}\nAttachments: {{$json.attachments}}\n\nReturn JSON:\n{\n  \"name\": \"string\",\n  \"email\": \"string\",\n  \"experience_score\": number,\n  \"skills_score\": number,\n  \"education_score\": number,\n  \"culture_score\": number,\n  \"total_score\": number,\n  \"verdict\": \"ADVANCE|REVIEW|BORDERLINE|REJECT\",\n  \"strengths\": [\"string\"],\n  \"concerns\": [\"string\"],\n  \"interview_questions\": [\"string\"],\n  \"summary\": \"string\"\n}",
+        "options": {"maxTokensToSample": 1000, "temperature": 0.2}
+      },
+      "id": "screen-resume",
+      "name": "Screen Resume (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Pipeline"},
+        "columns": {"mappingMode": "autoMapInputData"},
+        "options": {}
+      },
+      "id": "log-candidate",
+      "name": "Log to Pipeline Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [500, 300],
+      "credentials": {"googleSheetsOAuth2Api": {"id": "CONFIGURE_GOOGLE_CREDENTIALS", "name": "Google Sheets"}}
+    },
+    {
+      "parameters": {
+        "conditions": {"number": [{"value1": "={{$json.total_score}}", "operation": "gte", "value2": 20}]}
+      },
+      "id": "check-score",
+      "name": "Score >= 20?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_HIRING_MANAGER@example.com",
+        "subject": "=[ADVANCE] {{$json.name}} — Score: {{$json.total_score}}/30",
+        "emailType": "text",
+        "message": "Strong candidate for review.\n\nName: {{$json.name}}\nScore: {{$json.total_score}}/30\nVerdict: {{$json.verdict}}\nSummary: {{$json.summary}}\n\nStrengths:\n{{$json.strengths}}\n\nConcerns:\n{{$json.concerns}}\n\nSuggested Interview Questions:\n{{$json.interview_questions}}",
+        "options": {}
+      },
+      "id": "notify-advance",
+      "name": "Notify: Strong Candidate",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 200],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_HIRING_MANAGER@example.com",
+        "subject": "=[REVIEW] {{$json.name}} — Score: {{$json.total_score}}/30 — Draft rejection attached",
+        "emailType": "text",
+        "message": "Below-threshold candidate. Draft rejection email ready for review.\n\nName: {{$json.name}}\nScore: {{$json.total_score}}/30\nSummary: {{$json.summary}}\nConcerns: {{$json.concerns}}",
+        "options": {}
+      },
+      "id": "notify-reject",
+      "name": "Notify: Below Threshold",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 400],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    }
+  ],
+  "connections": {
+    "Check for Applications": {"main": [[{"node": "Screen Resume (Claude)", "type": "main", "index": 0}]]},
+    "Screen Resume (Claude)": {"main": [[{"node": "Log to Pipeline Sheet", "type": "main", "index": 0}]]},
+    "Log to Pipeline Sheet": {"main": [[{"node": "Score >= 20?", "type": "main", "index": 0}]]},
+    "Score >= 20?": {"main": [
+      [{"node": "Notify: Strong Candidate", "type": "main", "index": 0}],
+      [{"node": "Notify: Below Threshold", "type": "main", "index": 0}]
+    ]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "hr", "id": "9"}]
+}

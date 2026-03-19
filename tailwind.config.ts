@@ -9,8 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: "#6366F1",
+        secondary: "#1E293B",
+        accent: "#06B6D4",
+        background: "#F9FAFB",
+        card: "#FFFFFF",
+        text: "#111827",
+        muted: "#6B7280",
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+        mono: ["Fira Code", "monospace"],
       },
     },
   },

@@ -1,0 +1,106 @@
+{
+  "name": "Invoice & Expense Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {"item": [{"mode": "everyMinute", "minute": 15}]},
+        "filters": {"readStatus": "unread", "subject": "receipt OR invoice OR payment OR charge"}
+      },
+      "id": "email-trigger",
+      "name": "Check for Receipt Emails",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300],
+      "credentials": {"gmailOAuth2": {"id": "CONFIGURE_GMAIL_CREDENTIALS", "name": "Gmail"}}
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a bookkeeping assistant. Extract expense data from this email/receipt.\n\nFrom: {{$json.from}}\nSubject: {{$json.subject}}\nBody: {{$json.text}}\n\nReturn ONLY valid JSON:\n{\n  \"vendor\": \"string\",\n  \"date\": \"YYYY-MM-DD\",\n  \"total\": number,\n  \"tax\": number,\n  \"category\": \"string (from IRS categories)\",\n  \"subcategory\": \"string\",\n  \"payment_method\": \"string\",\n  \"deductible\": \"yes|no|partial\",\n  \"business_purpose\": \"string\",\n  \"anomaly\": \"string or null\"\n}",
+        "options": {"maxTokensToSample": 500, "temperature": 0.1}
+      },
+      "id": "extract-data",
+      "name": "Extract Receipt Data (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Expenses"},
+        "columns": {"mappingMode": "autoMapInputData"},
+        "options": {}
+      },
+      "id": "save-expense",
+      "name": "Save to Expense Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [500, 300],
+      "credentials": {"googleSheetsOAuth2Api": {"id": "CONFIGURE_GOOGLE_CREDENTIALS", "name": "Google Sheets"}}
+    },
+    {
+      "parameters": {
+        "rule": {"interval": [{"field": "cronExpression", "expression": "0 9 1 * *"}]}
+      },
+      "id": "monthly-trigger",
+      "name": "1st of Month 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 500]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {"__rl": true, "mode": "id", "value": "YOUR_GOOGLE_SHEET_ID"},
+        "sheetName": {"__rl": true, "mode": "name", "value": "Expenses"},
+        "options": {}
+      },
+      "id": "read-expenses",
+      "name": "Read All Expenses",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [300, 500],
+      "credentials": {"googleSheetsOAuth2Api": {"id": "CONFIGURE_GOOGLE_CREDENTIALS", "name": "Google Sheets"}}
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a bookkeeping assistant. Generate a monthly financial summary from this expense data.\n\nExpense data:\n{{$json.data}}\n\nGenerate the full Monthly Financial Summary following the system prompt format.",
+        "options": {"maxTokensToSample": 2000, "temperature": 0.2}
+      },
+      "id": "generate-summary",
+      "name": "Generate Monthly Summary (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [500, 500],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=Monthly Financial Summary — {{new Date().toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-summary",
+      "name": "Email Monthly Summary",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [700, 500],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    }
+  ],
+  "connections": {
+    "Check for Receipt Emails": {"main": [[{"node": "Extract Receipt Data (Claude)", "type": "main", "index": 0}]]},
+    "Extract Receipt Data (Claude)": {"main": [[{"node": "Save to Expense Sheet", "type": "main", "index": 0}]]},
+    "1st of Month 9AM": {"main": [[{"node": "Read All Expenses", "type": "main", "index": 0}]]},
+    "Read All Expenses": {"main": [[{"node": "Generate Monthly Summary (Claude)", "type": "main", "index": 0}]]},
+    "Generate Monthly Summary (Claude)": {"main": [[{"node": "Email Monthly Summary", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "finance", "id": "8"}]
+}

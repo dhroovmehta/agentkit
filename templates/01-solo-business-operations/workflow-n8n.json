@@ -1,0 +1,278 @@
+{
+  "name": "Solo Business Operations - Daily Briefing",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 7AM Trigger (Mon-Fri)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{$json.competitor_query}}"
+            },
+            {
+              "name": "count",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "brave-search",
+      "name": "Search Industry News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CONFIGURE_BRAVE_CREDENTIALS",
+          "name": "Brave Search API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Pipeline"
+        },
+        "options": {}
+      },
+      "id": "read-pipeline",
+      "name": "Read Sales Pipeline",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [300, 400],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CONFIGURE_GOOGLE_CREDENTIALS",
+          "name": "Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Finance"
+        },
+        "options": {}
+      },
+      "id": "read-finance",
+      "name": "Read Finance Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [300, 600],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CONFIGURE_GOOGLE_CREDENTIALS",
+          "name": "Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": []
+        },
+        "options": {}
+      },
+      "id": "merge-data",
+      "name": "Merge All Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a business operations AI. Given the following data, generate today's daily briefing following the exact format in your system prompt.\n\nSales Pipeline Data:\n{{$json.pipeline_data}}\n\nFinance Data:\n{{$json.finance_data}}\n\nIndustry News:\n{{$json.news_data}}\n\nGenerate the DAILY BRIEFING now.",
+        "options": {
+          "maxTokensToSample": 2000,
+          "temperature": 0.3
+        }
+      },
+      "id": "generate-briefing",
+      "name": "Generate Daily Briefing (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 400],
+      "credentials": {
+        "anthropicApi": {
+          "id": "CONFIGURE_ANTHROPIC_CREDENTIALS",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=Daily Briefing — {{new Date().toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Briefing Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 400],
+      "credentials": {
+        "smtp": {
+          "id": "CONFIGURE_SMTP_CREDENTIALS",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#daily-briefing",
+        "text": "={{$json.text}}",
+        "otherOptions": {}
+      },
+      "id": "send-slack",
+      "name": "Post to Slack (Optional)",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [900, 600],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "CONFIGURE_SLACK_CREDENTIALS",
+          "name": "Slack"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 7AM Trigger (Mon-Fri)": {
+      "main": [
+        [
+          {
+            "node": "Search Industry News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Sales Pipeline",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Finance Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Industry News": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Sales Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Read Finance Data": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "Generate Daily Briefing (Claude)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Daily Briefing (Claude)": {
+      "main": [
+        [
+          {
+            "node": "Send Briefing Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to Slack (Optional)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "agentkit",
+      "id": "1"
+    },
+    {
+      "name": "operations",
+      "id": "2"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-brave-search"],
+      "env": {"BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"},
+      "description": "Research companies and contacts for outreach personalization."
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/sales-data"],
+      "description": "Access lead lists, email templates, and CRM export files."
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-fetch"],
+      "description": "Fetch company websites and LinkedIn profiles for research."
+    },
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-gmail"],
+      "env": {"GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"},
+      "description": "Send outreach emails and track responses."
+    }
+  }
+}

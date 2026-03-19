@@ -1,0 +1,121 @@
+{
+  "name": "Competitive Intelligence Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {"interval": [{"field": "cronExpression", "expression": "0 7 * * 1"}]}
+      },
+      "id": "weekly-trigger",
+      "name": "Every Monday 7AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.competitor_website}}/pricing",
+        "options": {"response": {"response": {"responseFormat": "text"}}}
+      },
+      "id": "fetch-pricing",
+      "name": "Fetch Competitor Pricing Pages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [
+          {"name": "q", "value": "CONFIGURE_COMPETITOR_NAMES news update launch"},
+          {"name": "count", "value": "10"},
+          {"name": "freshness", "value": "pw"}
+        ]},
+        "options": {}
+      },
+      "id": "search-news",
+      "name": "Search Competitor News (Past Week)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 400],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "url": "https://api.brave.co/res/v1/web/search",
+        "method": "GET",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {"parameters": [
+          {"name": "q", "value": "CONFIGURE_COMPETITOR_NAMES hiring jobs"},
+          {"name": "count", "value": "10"}
+        ]},
+        "options": {}
+      },
+      "id": "search-jobs",
+      "name": "Search Competitor Job Postings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 600],
+      "credentials": {"httpHeaderAuth": {"id": "CONFIGURE_BRAVE_CREDENTIALS", "name": "Brave Search API"}}
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {"values": []},
+        "options": {}
+      },
+      "id": "merge-intel",
+      "name": "Merge All Intelligence",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {
+        "model": "claude-sonnet-4-20250514",
+        "prompt": "You are a competitive intelligence analyst. Generate this week's intelligence report following the CI Monitor system prompt format.\n\nCompetitors to analyze: CONFIGURE_COMPETITOR_LIST\n\nPricing page data:\n{{$json.pricing_data}}\n\nNews search results:\n{{$json.news_data}}\n\nJob posting search results:\n{{$json.jobs_data}}\n\nGenerate the full weekly competitive intelligence report with change detection, threat assessment, and strategic recommendations.",
+        "options": {"maxTokensToSample": 4000, "temperature": 0.3}
+      },
+      "id": "generate-report",
+      "name": "Generate CI Report (Claude)",
+      "type": "n8n-nodes-base.anthropic",
+      "typeVersion": 1,
+      "position": [700, 400],
+      "credentials": {"anthropicApi": {"id": "CONFIGURE_ANTHROPIC_CREDENTIALS", "name": "Anthropic API"}}
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL@example.com",
+        "subject": "=Competitive Intelligence Report — Week of {{new Date().toLocaleDateString()}}",
+        "emailType": "text",
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "id": "send-report",
+      "name": "Email CI Report",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [900, 400],
+      "credentials": {"smtp": {"id": "CONFIGURE_SMTP_CREDENTIALS", "name": "SMTP"}}
+    }
+  ],
+  "connections": {
+    "Every Monday 7AM": {"main": [[
+      {"node": "Fetch Competitor Pricing Pages", "type": "main", "index": 0},
+      {"node": "Search Competitor News (Past Week)", "type": "main", "index": 0},
+      {"node": "Search Competitor Job Postings", "type": "main", "index": 0}
+    ]]},
+    "Fetch Competitor Pricing Pages": {"main": [[{"node": "Merge All Intelligence", "type": "main", "index": 0}]]},
+    "Search Competitor News (Past Week)": {"main": [[{"node": "Merge All Intelligence", "type": "main", "index": 0}]]},
+    "Search Competitor Job Postings": {"main": [[{"node": "Merge All Intelligence", "type": "main", "index": 1}]]},
+    "Merge All Intelligence": {"main": [[{"node": "Generate CI Report (Claude)", "type": "main", "index": 0}]]},
+    "Generate CI Report (Claude)": {"main": [[{"node": "Email CI Report", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": [{"name": "agentkit", "id": "1"}, {"name": "intelligence", "id": "11"}]
+}

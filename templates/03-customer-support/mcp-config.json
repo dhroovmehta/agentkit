@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/your/support-data"
+      ],
+      "description": "Access knowledge base, FAQ docs, and support history."
+    },
+    "gmail": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-gmail"
+      ],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"
+      },
+      "description": "Read incoming support emails and send responses."
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"
+      },
+      "description": "Search for known issues, documentation, and troubleshooting steps."
+    }
+  }
+}

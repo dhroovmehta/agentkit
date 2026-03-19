@@ -1,0 +1,68 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/your/business-data"
+      ],
+      "description": "Access business files, reports, and documents. Update the path to your business data directory."
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"
+      },
+      "description": "Web search for competitor research, market news, and industry updates."
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-google-drive"
+      ],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"
+      },
+      "description": "Access Google Sheets for financial tracking, Google Docs for reports."
+    },
+    "slack": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-slack"
+      ],
+      "env": {
+        "SLACK_BOT_TOKEN": "YOUR_SLACK_BOT_TOKEN"
+      },
+      "description": "Send daily briefings and alerts to Slack channels."
+    },
+    "gmail": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-gmail"
+      ],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"
+      },
+      "description": "Send briefings via email and process support emails."
+    },
+    "google-calendar": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic/mcp-server-google-calendar"
+      ],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account-key.json"
+      },
+      "description": "Access calendar for daily briefing prep and scheduling."
+    }
+  }
+}
