@@ -24,7 +24,7 @@ export const metadata: Metadata = {
       "10 battle-tested AI agent templates. Download. Configure. Run.",
   },
   verification: {
-    google: "x2SOtWXlw9tE1I4J22Ov_SllJ1BBlArLSRdblTSNqL8",
+    google: "wLbd6xY9C9Au3kOPz2sR6J_dDdh5E4dvUDesuqo9lIA",
   },
 };
 
