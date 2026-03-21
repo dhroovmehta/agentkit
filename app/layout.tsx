@@ -65,6 +65,58 @@ export default function RootLayout({
             }),
           }}
         />
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "What is AgentKit?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "AgentKit provides pre-built AI agent workflow templates that come with system prompts, MCP configurations, n8n workflows, and setup guides. Download a template, configure it for your use case, and deploy your AI agent in 30 minutes."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Do I need coding experience to use AgentKit?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No coding experience required. AgentKit templates are designed for non-technical users. Each template includes step-by-step setup guides and no-code configuration options. You can have an AI agent running in your business within 30 minutes."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What platforms do AgentKit templates support?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "AgentKit templates work with Claude, OpenAI APIs, and can be deployed via n8n, Make, Zapier, or your own infrastructure. Each template includes MCP configurations for maximum flexibility and integration options."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can I customize the templates?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Every AgentKit template includes editable system prompts, configuration files, and n8n workflow diagrams. Customize the tone, behavior, and workflow to match your exact requirements."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What's included in each template?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Each template includes a system prompt optimized for the use case, MCP server configurations, a complete n8n workflow, a setup guide with screenshots, and example prompts to get you started immediately."
+                  }
+                }
+              ]
+            }),
+          }}
+        />
       </head>
       <body className="antialiased min-h-screen flex flex-col">
         <Navbar />
