@@ -1,0 +1,12 @@
+# AgentKit — Pre-built AI Agent Workflows
+> Download battle-tested AI agent templates with system prompts, MCP configs, n8n workflows, and setup guides. Deploy an agent in under 30 minutes.
+
+## Docs
+- https://agentkit-sandy.vercel.app
+- https://agentkit-sandy.vercel.app/templates
+
+## API
+- https://agentkit-sandy.vercel.app/api/subscribe
+
+## Contact
+- support@agentkit.app

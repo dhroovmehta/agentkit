@@ -43,6 +43,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why AI Agent Templates Matter */}
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-text text-center mb-6">
+            Why pre-built AI agent templates win
+          </h2>
+          <p className="text-lg text-muted text-center leading-relaxed">
+            Building AI agents from scratch takes weeks of research, architectural decisions, and debugging. Our templates eliminate that friction by providing production-ready workflows with proven system prompts, MCP configurations, and automation logic already battle-tested. Whether you're choosing between LangChain, CrewAI, or Claude's native capabilities, starting with a pre-built template accelerates your time-to-value from months to days. Each template includes everything needed to deploy immediately: role-based prompts optimized for specific use cases, secure API integrations, n8n automation workflows for orchestration, and comprehensive setup guides with troubleshooting. No more starting from a blank page or copying patterns from tutorials that break when you customize them.
+          </p>
+        </div>
+      </section>
+
       {/* What's in each template */}
       <section className="py-16 bg-white px-4">
         <div className="max-w-6xl mx-auto">
