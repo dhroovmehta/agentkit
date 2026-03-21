@@ -106,7 +106,8 @@ function applyCORS(
  */
 function generateNonce(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(16));
-  return Buffer.from(bytes).toString("base64");
+  // Use Web API for base64 encoding (Edge Runtime compatible)
+  return btoa(String.fromCharCode(...Array.from(bytes)));
 }
 
 /**
