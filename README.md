@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentKit
+
+Production-ready AI agent templates and starter kits. Build sophisticated autonomous agents with pre-configured tool calling, memory management, and decision-making systems.
+
+AgentKit provides battle-tested patterns for implementing AI agents that can perceive, reason, and act on your data and systems. Ships with examples, documentation, and best practices.
+
+## Key Features
+
+- **Agent Templates** - Pre-built patterns for common agent types (researcher, planner, executor, evaluator)
+- **Tool Integration** - Simplified interface for adding custom tools and integrations
+- **Memory Management** - Persistent and contextual memory systems for multi-turn interactions
+- **Decision Making** - Agentic loops with planning, reasoning, and execution phases
+- **Error Handling** - Robust error recovery and fallback strategies
+- **Observability** - Built-in logging and tracing for agent behavior analysis
+- **Scaling** - Patterns for coordinating multiple agents on complex tasks
+- **Type Safety** - Full TypeScript support with comprehensive types
 
 ## Getting Started
 
-First, run the development server:
+Explore templates: **[AgentKit - AI Agent Starter Kits](https://agentkit.vercel.app)**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Built with **Next.js** (latest version) for modern agent development
+- Deployed on **Vercel** for instant prototyping and production deployment
+- Full TypeScript support for reliability
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Agent Types Included
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Researcher Agent** - Information gathering and synthesis
+- **Planner Agent** - Task decomposition and workflow planning
+- **Executor Agent** - Action taking and tool orchestration
+- **Evaluator Agent** - Quality assessment and feedback
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+MIT
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Share your agent patterns and improvements with the community.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Start building agents:** [agentkit.vercel.app](https://agentkit.vercel.app)
