@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "AgentKit — Pre-built AI Agent Workflows. Download. Configure. Run.",
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
     title: "AgentKit — Pre-built AI Agent Workflows",
     description:
       "10 battle-tested AI agent templates. System prompts, MCP configs, n8n workflows, and setup guides included.",
-    url: "https://agentkit-sandy.vercel.app",
+    url: "https://agentkit.vercel.app",
     siteName: "AgentKit",
     type: "website",
   },
@@ -20,6 +22,9 @@ export const metadata: Metadata = {
     title: "AgentKit — Pre-built AI Agent Workflows",
     description:
       "10 battle-tested AI agent templates. Download. Configure. Run.",
+  },
+  verification: {
+    google: "YOUR_GOOGLE_VERIFICATION_CODE",
   },
 };
 
@@ -122,6 +127,8 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
