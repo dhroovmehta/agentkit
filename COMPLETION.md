@@ -7,9 +7,10 @@
 
 ### Landing Page (Next.js 14 + Tailwind CSS + TypeScript)
 - **Homepage** (`/`) — Hero section, "What's included" breakdown, template grid (10 cards), pricing table (3 tiers), testimonials, email capture form, template request form, FAQ
-- **Template Detail Pages** (`/templates/[slug]`) — 10 individual pages with descriptions, features, use cases, system prompt preview, pricing, and Gumroad buy buttons
+- **Template Detail Pages** (`/templates/[slug]`) — 10 individual pages with descriptions, features, use cases, system prompt preview, pricing, and Lemon Squeezy checkout buttons
 - **Bundles Page** (`/bundles`) — Solo Founder Bundle, Agency Bundle, and All-Access Pass comparison
 - **API Route** (`/api/subscribe`) — ConvertKit email subscription endpoint
+- **Webhook Route** (`/api/webhooks/lemonsqueezy`) — Lemon Squeezy webhook handler for order fulfillment
 - **Components** — Navbar (responsive mobile menu), Footer, TemplateCard, TemplatePreview, PricingTable, FAQ (accordion), TestimonialCard
 
 ### Template Bundles (10 complete)
@@ -43,13 +44,13 @@ Each template includes:
 - `PLAN.md` — Implementation plan
 - `.gitignore` — Properly configured
 
-## Production Hardening (2026-03-18)
+## Production Hardening (2026-03-18, updated 2026-03-28)
 
-### 1. Gumroad Webhook Idempotency
-- **New route:** `/api/webhooks/gumroad` — processes Gumroad Ping (sale) webhooks
-- **Idempotency:** In-memory store (`lib/idempotency.ts`) deduplicates by `sale_id`. Duplicate webhooks return 200 with `already_processed` status.
-- **Auth:** Optional `GUMROAD_SELLER_ID` env var validates webhook source
-- **Error handling:** All processing wrapped in try/catch. Returns 200 even on processing errors to prevent Gumroad retry storms. Errors logged for investigation.
+### 1. Lemon Squeezy Webhook Processing
+- **Route:** `/api/webhooks/lemonsqueezy` — processes Lemon Squeezy order webhooks for payment fulfillment
+- **Idempotency:** In-memory store deduplicates by event ID. Duplicate webhooks return 200 with `already_processed` status.
+- **Auth:** `LEMONSQUEEZY_WEBHOOK_SECRET` env var validates webhook source via HMAC signature
+- **Error handling:** All processing wrapped in try/catch. Returns 200 even on processing errors to prevent webhook retry storms. Errors logged for investigation.
 - **Memory safety:** Auto-eviction after 24 hours, capped at 10,000 entries
 
 ### 2. Email Capture Hardening
@@ -125,27 +126,28 @@ All responses include production security headers applied via Next.js `headers()
 - Gumroad webhook endpoint with idempotency and seller verification
 - All 10 ZIP bundles created and verified
 
-## What's Blocked (Needs Human Action)
+## What's Blocked (None — Site is LIVE)
 
-### Immediate (before launch)
-1. **Gumroad Account** — Create account at gumroad.com, upload all 10 ZIP bundles as digital products, set prices per PRD
-2. **Gumroad URLs** — After creating products, update `gumroadUrl` fields in `content/templates.ts` with actual Gumroad product URLs
-3. **ConvertKit Account** — Create free account at convertkit.com, create a form, get API key and form ID
-4. **Environment Variables** — Set `CONVERTKIT_API_KEY`, `CONVERTKIT_FORM_ID`, and `GUMROAD_SELLER_ID` in `.env.local` and Vercel
-5. **Vercel Deployment** — Run `vercel --prod` to deploy (requires Vercel account and CLI)
-6. **PDF Setup Guides** — Convert `setup-guide.md` files to PDF using pandoc or similar tool
+### Completed (2026-03-26 to 2026-03-28)
+1. ✅ **Lemon Squeezy Account** — 13 products created (10 templates + 2 bundles + 1 subscription)
+2. ✅ **Lemon Squeezy URLs** — All checkout URLs wired in `content/templates.ts`
+3. ✅ **ConvertKit Account** — Free trial active, form 9253219 created, v3 API key deployed
+4. ✅ **Environment Variables** — All set in Vercel production (`LEMONSQUEEZY_API_KEY`, `LEMONSQUEEZY_WEBHOOK_SECRET`, `CONVERTKIT_API_KEY`, `CONVERTKIT_FORM_ID`)
+5. ✅ **Vercel Deployment** — Landing page LIVE at agentkit-sandy.vercel.app
+6. ✅ **Email Automation** — ConvertKit 5-email welcome sequence deployed and wired to form 9253219
 
-### Post-Launch
-7. **Custom Domain** — Optional: set up agentkit-ai.vercel.app or custom domain
-8. **Gumroad Bundles** — Create Solo Founder Bundle ($149) and Agency Bundle ($199) as Gumroad bundle products
-9. **Gumroad Membership** — Create All-Access Pass at $29/month as Gumroad membership
-10. **ImprovMX** — Set up hello@agentkit.ai email forwarding (requires custom domain)
+### Optional / Post-Launch
+7. **Custom Domain** — Optional: set up agentkit-ai.com or similar
+8. **PDF Setup Guides** — Convert `setup-guide.md` files to PDF for delivery (currently markdown in ZIPs)
+9. **ImprovMX** — Set up hello@agentkit.ai email forwarding (requires custom domain)
 
-## Deployment Status
+## Deployment Status (2026-03-28)
 - **Landing page:** LIVE on Vercel (https://agentkit-sandy.vercel.app)
-- **Templates:** All 10 built, zipped, delivered via Lemon Squeezy
-- **Email integration:** API endpoint built, awaiting ConvertKit credentials
-- **Payments:** LIVE — 13 Lemon Squeezy products created (rightfullyyours store), all checkout URLs wired in `content/templates.ts` (2026-03-26). LS API key + webhook secret deployed to Vercel production. Webhook URL: rightfullyyours.co/api/webhooks/lemonsqueezy.
+- **Templates:** All 10 built, zipped, delivered via Lemon Squeezy digital product files
+- **Email integration:** LIVE — ConvertKit form 9253219 integrated, v3 API key deployed, 5-email welcome sequence active
+- **Payments:** LIVE — 13 Lemon Squeezy products created (rightfullyyours store), all checkout URLs wired in `content/templates.ts`. Webhook secret deployed. Webhook URL: agentkit-sandy.vercel.app/api/webhooks/lemonsqueezy
+- **SEO:** 5 blog articles live, sitemap submitted to GSC, OG images deployed (11 static PNGs)
+- **Marketing channels:** ConvertKit welcome sequence, Twitter thread strategy prepped, Reddit strategy documented
 
 ## File Structure
 ```
@@ -156,8 +158,11 @@ agentkit/
 │   ├── globals.css
 │   ├── templates/[slug]/page.tsx
 │   ├── bundles/page.tsx
+│   ├── blog/
+│   │   ├── layout.tsx
+│   │   └── [slug]/page.tsx
 │   ├── api/subscribe/route.ts
-│   └── api/webhooks/gumroad/route.ts
+│   └── api/webhooks/lemonsqueezy/route.ts
 ├── components/
 │   ├── Navbar.tsx, Footer.tsx
 │   ├── TemplateCard.tsx, TemplatePreview.tsx
@@ -192,9 +197,11 @@ agentkit/
 └── package.json
 ```
 
-## Next Steps (in order)
-1. Create Gumroad account and upload all 10 templates
-2. Create ConvertKit account and configure email capture
-3. Update Gumroad URLs in `content/templates.ts`
-4. Deploy to Vercel
-5. Execute Reddit launch strategy (Day 3 in PRD)
+## Next Steps (Launch Phase 4 — Marketing Execution)
+1. ✅ Lemon Squeezy payments LIVE with all checkout URLs wired
+2. ✅ ConvertKit email capture and automation LIVE
+3. ✅ Site deployed to Vercel with SEO blog content
+4. **Reddit seeding (Mar 29+)** — Anonymous posts in r/indiedev, r/automationtips, r/AI_Agents
+5. **Twitter threads (Mar 31–Apr 8)** — 5 threads via @TheFakeConte (2-day cadence)
+6. **ProductHunt (TBD)** — Prepare launch kit (requires Hunt account setup)
+7. Monitor analytics daily for 7 days (conversion rate, traffic sources, engagement)
