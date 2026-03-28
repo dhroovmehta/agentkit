@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     q: "Do you offer refunds?",
-    a: "Yes. 30-day money-back guarantee on all purchases, no questions asked. If a template does not work for you, email hello@agentkit.ai and we will process your refund immediately.",
+    a: "Yes. 30-day money-back guarantee on all purchases, no questions asked. If a template does not work for you, reach out through our Lemon Squeezy store page and we will process your refund immediately.",
   },
   {
     q: "Which AI model do the templates work with?",
