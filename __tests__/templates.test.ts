@@ -24,7 +24,7 @@ describe("Template Data Integrity", () => {
       expect(t.features.length).toBeGreaterThan(0);
       expect(t.useCases.length).toBeGreaterThan(0);
       expect(t.setupTime).toBeTruthy();
-      expect(t.gumroadUrl).toBeTruthy();
+      expect(t.checkoutUrl).toBeTruthy();
       expect(typeof t.isFree).toBe("boolean");
       expect(typeof t.price).toBe("number");
       expect(t.price).toBeGreaterThanOrEqual(0);
@@ -118,7 +118,7 @@ describe("All-Access Plan", () => {
     expect(allAccessPlan.features.length).toBeGreaterThan(0);
   });
 
-  it("has a gumroad URL", () => {
-    expect(allAccessPlan.gumroadUrl).toBeTruthy();
+  it("has a checkout URL", () => {
+    expect(allAccessPlan.checkoutUrl).toBeTruthy();
   });
 });

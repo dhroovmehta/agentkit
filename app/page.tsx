@@ -1,7 +1,6 @@
 import TemplateCard from "@/components/TemplateCard";
 import PricingTable from "@/components/PricingTable";
 import FAQ from "@/components/FAQ";
-import TestimonialCard from "@/components/TestimonialCard";
 import { templates } from "@/content/templates";
 
 export default function Home() {
@@ -32,7 +31,7 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="#"
+              href="/templates/solo-business-operations"
               className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-base"
             >
               Get Free Template
@@ -147,16 +146,16 @@ export default function Home() {
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
               <div>
-                <p className="font-semibold text-text">500+</p>
-                <p className="text-muted">Deployed agents tracked</p>
-              </div>
-              <div>
-                <p className="font-semibold text-text">98%</p>
-                <p className="text-muted">Setup success rate</p>
-              </div>
-              <div>
                 <p className="font-semibold text-text">10</p>
-                <p className="text-muted">Industry-tested templates</p>
+                <p className="text-muted">Ready-to-deploy templates</p>
+              </div>
+              <div>
+                <p className="font-semibold text-text">5 files</p>
+                <p className="text-muted">In every template bundle</p>
+              </div>
+              <div>
+                <p className="font-semibold text-text">&lt;30 min</p>
+                <p className="text-muted">Setup time per template</p>
               </div>
             </div>
           </div>
@@ -264,31 +263,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials placeholder */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-text text-center mb-12">
-            What people are saying
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <TestimonialCard
-              quote="I set up the Solo Business Operations agent in about 25 minutes. It now sends me a daily briefing that replaced 3 separate tools I was paying for."
-              author="Alex M."
-              role="Solo SaaS Founder"
-            />
-            <TestimonialCard
-              quote="The content repurposing pipeline saved my team 8 hours per week. We publish one blog post and it automatically generates all our social content."
-              author="Sarah K."
-              role="Agency Owner"
-            />
-            <TestimonialCard
-              quote="The setup guides are incredibly thorough. I am not technical at all and I had the sales outreach agent running before lunch."
-              author="James R."
-              role="Freelance Consultant"
-            />
-          </div>
-        </div>
-      </section>
+      {/* Social proof — will add real testimonials once users try the free template */}
 
       {/* Email capture */}
       <section className="py-16 bg-secondary px-4">

@@ -1,15 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { templates, getTemplateBySlug, bundles } from "@/content/templates";
 import { POST as subscribeHandler } from "@/app/api/subscribe/route";
-import { POST as gumroadWebhookHandler } from "@/app/api/webhooks/gumroad/route";
 import { resetIdempotencyStore } from "@/lib/idempotency";
 import { NextRequest } from "next/server";
 
 /**
  * Integration tests for the critical customer paths:
- * 1. Browse templates -> view detail -> purchase (Gumroad link)
+ * 1. Browse templates -> view detail -> purchase (Lemon Squeezy link)
  * 2. Email signup -> receive free template
- * 3. Gumroad webhook -> purchase fulfillment
+ * 3. Lemon Squeezy webhook -> purchase fulfillment
  */
 
 describe("Customer Journey: Browse -> Purchase", () => {
@@ -25,12 +24,12 @@ describe("Customer Journey: Browse -> Purchase", () => {
     }
   });
 
-  it("every paid template has a gumroad URL placeholder", () => {
+  it("every paid template has a checkout URL placeholder", () => {
     const paidTemplates = templates.filter((t) => !t.isFree);
     for (const template of paidTemplates) {
       // In production, these should not be "#" -- flag them
-      expect(template.gumroadUrl).toBeTruthy();
-      // When gumroadUrl is still "#", the buy button will exist but not redirect
+      expect(template.checkoutUrl).toBeTruthy();
+      // When checkoutUrl is still "#", the buy button will exist but not redirect
       // This test documents the requirement
     }
   });
@@ -138,7 +137,7 @@ describe("Customer Journey: Email Signup for Free Template", () => {
   });
 });
 
-describe("Customer Journey: Gumroad Purchase Fulfillment", () => {
+describe("Customer Journey: Lemon Squeezy Purchase Fulfillment", () => {
   beforeEach(() => {
     resetIdempotencyStore();
     vi.unstubAllEnvs();
@@ -148,65 +147,13 @@ describe("Customer Journey: Gumroad Purchase Fulfillment", () => {
     vi.unstubAllEnvs();
   });
 
-  function createWebhookRequest(
-    fields: Record<string, string>
-  ): NextRequest {
-    const formData = new URLSearchParams();
-    for (const [key, value] of Object.entries(fields)) {
-      formData.append(key, value);
-    }
-    return new NextRequest(
-      "http://localhost:3000/api/webhooks/gumroad",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString(),
-      }
-    );
-  }
-
-  it("processes a real Gumroad sale webhook end-to-end", async () => {
-    const request = createWebhookRequest({
-      sale_id: "integration_test_sale_001",
-      email: "buyer@company.com",
-      product_name: "Content Repurposing Pipeline",
-      price: "4900",
-      seller_id: "our_seller_id",
-    });
-
-    const response = await gumroadWebhookHandler(request);
-    expect(response.status).toBe(200);
-
-    const body = await response.json();
-    expect(body.status).toBe("processed");
-    expect(body.sale_id).toBe("integration_test_sale_001");
+  it.skip("processes a real Lemon Squeezy sale webhook end-to-end", async () => {
+    // Tests moved to __tests__/lemonsqueezy-webhook.test.ts
+    // This test is skipped until LS product IDs are configured
   });
 
-  it("handles Gumroad webhook retry (duplicate) correctly", async () => {
-    const payload = {
-      sale_id: "integration_test_sale_002",
-      email: "buyer@company.com",
-      product_name: "Sales Outreach Automation",
-      price: "7900",
-      seller_id: "our_seller_id",
-    };
-
-    // First delivery
-    const req1 = createWebhookRequest(payload);
-    const res1 = await gumroadWebhookHandler(req1);
-    expect(res1.status).toBe(200);
-    expect((await res1.json()).status).toBe("processed");
-
-    // Gumroad retries (duplicate)
-    const req2 = createWebhookRequest(payload);
-    const res2 = await gumroadWebhookHandler(req2);
-    expect(res2.status).toBe(200);
-    expect((await res2.json()).status).toBe("already_processed");
-
-    // Third retry
-    const req3 = createWebhookRequest(payload);
-    const res3 = await gumroadWebhookHandler(req3);
-    expect(res3.status).toBe(200);
-    expect((await res3.json()).status).toBe("already_processed");
+  it.skip("handles Lemon Squeezy webhook retry (duplicate) correctly", async () => {
+    // Tests moved to __tests__/lemonsqueezy-webhook.test.ts
+    // This test is skipped until LS product IDs are configured
   });
 });

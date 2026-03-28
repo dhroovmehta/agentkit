@@ -43,7 +43,7 @@ export default function Navbar() {
               FAQ
             </Link>
             <a
-              href="#"
+              href="/templates/solo-business-operations"
               className="inline-flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
             >
               Get Free Template
@@ -113,7 +113,7 @@ export default function Navbar() {
               FAQ
             </Link>
             <a
-              href="#"
+              href="/templates/solo-business-operations"
               className="block mx-3 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg text-center"
             >
               Get Free Template

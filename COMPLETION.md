@@ -34,7 +34,7 @@ Each template includes:
 - `workflow-n8n.json` — Importable n8n automation workflow
 - `setup-guide.md` — Step-by-step setup guide (to be converted to PDF)
 - `README.md` — Quick-start reference
-- `bundle.zip` — All files zipped for Gumroad upload
+- `bundle.zip` — All files zipped for Lemon Squeezy delivery
 
 ### Configuration Files
 - `.env.local` and `.env.example` — Environment variable templates
@@ -142,10 +142,10 @@ All responses include production security headers applied via Next.js `headers()
 10. **ImprovMX** — Set up hello@agentkit.ai email forwarding (requires custom domain)
 
 ## Deployment Status
-- **Landing page:** Built and ready for `vercel --prod` deployment
-- **Templates:** All 10 built, zipped, ready for Gumroad upload
+- **Landing page:** LIVE on Vercel (https://agentkit-sandy.vercel.app)
+- **Templates:** All 10 built, zipped, delivered via Lemon Squeezy
 - **Email integration:** API endpoint built, awaiting ConvertKit credentials
-- **Payments:** Awaiting Gumroad product setup
+- **Payments:** LIVE — 13 Lemon Squeezy products created (rightfullyyours store), all checkout URLs wired in `content/templates.ts` (2026-03-26). LS API key + webhook secret deployed to Vercel production. Webhook URL: rightfullyyours.co/api/webhooks/lemonsqueezy.
 
 ## File Structure
 ```

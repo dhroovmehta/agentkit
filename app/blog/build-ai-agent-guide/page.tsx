@@ -14,20 +14,20 @@ export const metadata: Metadata = {
     authors: ["AgentKit"],
   },
   other: {
-    'article:modified_time': '2026-03-21T00:00:00Z',
+    'article:modified_time': '2026-03-26T00:00:00Z',
     'article:published_time': '2026-03-21T00:00:00Z',
   },
 };
 
 const schemaData = {
   "@context": "https://schema.org",
-  "@type": "Article",
+  "@type": "BlogPosting",
   headline: "How to Build Your First AI Agent: A Practical Guide",
   description:
     "Step-by-step guide to building your first AI agent in 2026",
   image: "https://agentkit.vercel.app/og-image.png",
   datePublished: "2026-03-21",
-  dateModified: "2026-03-21",
+  dateModified: "2026-03-26",
   mainEntityOfPage: {
     "@type": "WebPage",
     "@id": "https://agentkit.vercel.app/blog/build-ai-agent-guide"
@@ -131,9 +131,9 @@ export default function BuildAiAgentGuidePage() {
           <div className="flex gap-4 mt-6 text-sm text-muted flex-wrap">
             <span>Published March 21, 2026</span>
             <span>•</span>
-            <span>Last updated: March 2026 · Verified for accuracy</span>
+            <span>Last updated: March 26, 2026 · Verified for accuracy</span>
             <span>•</span>
-            <span>12 min read</span>
+            <span>15 min read</span>
           </div>
         </header>
 
@@ -187,7 +187,7 @@ export default function BuildAiAgentGuidePage() {
               Option A: Pre-Built Template (Fastest)
             </h3>
             <p>
-              If your use case matches one of AgentKit's 10 templates (operations, sales, support, content), download the template. It includes a production system prompt, MCP configuration, n8n workflow, and setup guide. Deploy in 30 minutes. Cost: $29-$99 per template.
+              If your use case matches one of AgentKit's templates, download the template. It includes a production system prompt, MCP configuration, n8n workflow, and setup guide. Deploy in 30 minutes. For example, the <a href="/templates/solo-business-operations" className="text-primary hover:underline">Solo Business Operations Agent</a> is available free as a lead magnet. Cost: $29-$99 per template for others.
             </p>
 
             <h3 className="text-xl font-bold text-text mt-4 mb-2">
@@ -376,7 +376,7 @@ export default function BuildAiAgentGuidePage() {
             </p>
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 my-4 space-y-3">
               <p>
-                <strong>9 AM:</strong> Download the Customer Support Auto-Responder template ($49)
+                <strong>9 AM:</strong> Download the <a href="/templates/customer-support-auto-responder" className="text-primary hover:underline">Customer Support Auto-Responder</a> template ($49)
               </p>
               <p>
                 <strong>9:30 AM:</strong> Edit the system prompt to match your tone and policies
@@ -395,6 +395,60 @@ export default function BuildAiAgentGuidePage() {
               </p>
               <p>
                 <strong>2 PM:</strong> Monitor for errors and tweak response templates
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-3xl font-bold text-text mb-4">
+              Choosing the Right Model for Your Agent
+            </h2>
+            <p>
+              Your choice of LLM (language model) directly impacts agent cost, latency, and quality. Here's how to pick:
+            </p>
+
+            <h3 className="text-xl font-bold text-text mt-4 mb-2">
+              Claude 3.5 Haiku (Recommended for most agents)
+            </h3>
+            <p>
+              Best for: Fast, cost-sensitive workloads. Customer support, content repurposing, data extraction.
+            </p>
+            <ul className="list-disc list-inside space-y-1 mb-4">
+              <li>Cost: ~$0.80 per 1M input tokens, ~$4 per 1M output tokens</li>
+              <li>Speed: 150-200 tokens/second</li>
+              <li>Quality: Excellent for structured tasks, competitive reasoning</li>
+              <li>Best for: High-volume, latency-sensitive agents</li>
+            </ul>
+
+            <h3 className="text-xl font-bold text-text mt-4 mb-2">
+              GPT-4o Mini (Good alternative)
+            </h3>
+            <p>
+              Best for: Agents that need broad knowledge and web search capabilities. Sales outreach, research agents.
+            </p>
+            <ul className="list-disc list-inside space-y-1 mb-4">
+              <li>Cost: ~$0.15 per 1M input tokens, ~$0.60 per 1M output tokens (cheapest option)</li>
+              <li>Speed: 100-150 tokens/second</li>
+              <li>Quality: Slightly lower reasoning, but excellent context window (128K)</li>
+              <li>Best for: Budget-conscious deployments with large documents</li>
+            </ul>
+
+            <h3 className="text-xl font-bold text-text mt-4 mb-2">
+              Claude 3.5 Sonnet (Premium option)
+            </h3>
+            <p>
+              Best for: Complex reasoning, code generation, multi-agent coordination. Only use if Haiku fails.
+            </p>
+            <ul className="list-disc list-inside space-y-1 mb-4">
+              <li>Cost: ~$3 per 1M input tokens, ~$15 per 1M output tokens</li>
+              <li>Speed: 200-300 tokens/second</li>
+              <li>Quality: Best-in-class reasoning and code understanding</li>
+              <li>Best for: Complex agents that need advanced reasoning</li>
+            </ul>
+
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 my-4">
+              <p className="font-semibold text-text mb-2">
+                Pro tip: Start with Haiku for 2 weeks. If it fails on 5%+ of requests, upgrade to Sonnet. Don't reach for expensive models by default.
               </p>
             </div>
           </section>
@@ -440,6 +494,23 @@ export default function BuildAiAgentGuidePage() {
             </p>
           </section>
 
+          <section className="my-12">
+            <div className="border border-primary/20 rounded-xl p-8 bg-primary/5">
+              <h2 className="text-2xl font-bold text-text mb-3">
+                Build Your First Agent in 30 Minutes — Free
+              </h2>
+              <p className="text-muted mb-4">
+                Skip the setup complexity. The <a href="/templates/solo-business-operations" className="text-primary hover:underline">Solo Business Operations Agent</a> template includes everything you need: a 4,000-word system prompt, MCP configuration, n8n workflow, and step-by-step setup guide. It's free — no credit card required.
+              </p>
+              <a
+                href="/templates/solo-business-operations"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Get the Free Template →
+              </a>
+            </div>
+          </section>
+
           <section>
             <h2 className="text-3xl font-bold text-text mb-4">
               Key Takeaway
@@ -451,44 +522,47 @@ export default function BuildAiAgentGuidePage() {
 
           <section>
             <h2 className="text-3xl font-bold text-text mb-4">
-              Related Tools in the AI Agent Ecosystem
+              Related Resources & Templates
             </h2>
             <p>
-              Once you've built your first agent, explore these complementary tools to improve your deployment:
+              Once you've built your first agent, explore these complementary templates and guides to improve your deployment:
             </p>
             <ul className="list-disc list-inside space-y-2 mb-4">
               <li>
                 <a
-                  href="https://agentkit.vercel.app/blog/best-ai-agent-templates"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/templates/customer-support-auto-responder"
                   className="text-primary hover:underline"
                 >
-                  Best AI Agent Templates & Starter Kits
+                  Customer Support Auto-Responder
                 </a>
-                {" — Compare pre-built templates, frameworks, and where to start"}
+                {" — Pre-built template for automated support responses"}
               </li>
               <li>
                 <a
-                  href="https://agentscore-five.vercel.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/templates/sales-outreach-automation"
                   className="text-primary hover:underline"
                 >
-                  AgentScore
+                  Sales Outreach Automation
                 </a>
-                {" — Evaluate your agent's readiness for production"}
+                {" — Template for scaling outreach with AI agents"}
               </li>
               <li>
                 <a
-                  href="https://botforge-livid.vercel.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/blog/system-prompts-guide"
                   className="text-primary hover:underline"
                 >
-                  BotForge
+                  System Prompts Guide
                 </a>
-                {" — Build production chatbots and multi-agent systems"}
+                {" — Deep dive into crafting effective system prompts"}
+              </li>
+              <li>
+                <a
+                  href="/blog/mcp-servers-explained"
+                  className="text-primary hover:underline"
+                >
+                  MCP Servers Explained
+                </a>
+                {" — Understanding Model Context Protocol for agent tool integration"}
               </li>
             </ul>
           </section>

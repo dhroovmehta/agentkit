@@ -65,18 +65,20 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="mailto:hello@agentkit.ai"
+                  href="/#faq"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  hello@agentkit.ai
+                  FAQ
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="https://rightfullyyours.lemonsqueezy.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  Gumroad Store
+                  Store
                 </a>
               </li>
             </ul>

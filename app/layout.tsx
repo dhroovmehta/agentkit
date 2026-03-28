@@ -13,15 +13,24 @@ export const metadata: Metadata = {
     title: "AgentKit — Pre-built AI Agent Workflows",
     description:
       "10 battle-tested AI agent templates. System prompts, MCP configs, n8n workflows, and setup guides included.",
-    url: "https://agentkit.vercel.app",
+    url: "https://agentkit-sandy.vercel.app",
     siteName: "AgentKit",
     type: "website",
+    images: [
+      {
+        url: "https://agentkit-sandy.vercel.app/og/homepage.png",
+        width: 1200,
+        height: 630,
+        alt: "AgentKit — Pre-built AI Agent Workflows. Download. Configure. Run.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AgentKit — Pre-built AI Agent Workflows",
     description:
       "10 battle-tested AI agent templates. Download. Configure. Run.",
+    images: ["https://agentkit-sandy.vercel.app/og/homepage.png"],
   },
   verification: {
     google: "wLbd6xY9C9Au3kOPz2sR6J_dDdh5E4dvUDesuqo9lIA",

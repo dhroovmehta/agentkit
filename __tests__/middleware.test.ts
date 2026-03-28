@@ -61,7 +61,7 @@ describe("middleware — rate limiting", () => {
     // Hit webhook path 100 times — should never get 429
     for (let i = 0; i < 100; i++) {
       const response = middleware(
-        createRequest("/api/webhooks/gumroad", {
+        createRequest("/api/webhooks/lemonsqueezy", {
           method: "POST",
           ip: "10.0.0.1",
         })
@@ -116,7 +116,7 @@ describe("middleware — CORS", () => {
 
   it("allows POST method on webhook paths", () => {
     const response = middleware(
-      createRequest("/api/webhooks/gumroad", { method: "POST" })
+      createRequest("/api/webhooks/lemonsqueezy", { method: "POST" })
     );
     expect(response.headers.get("Access-Control-Allow-Methods")).toBe("POST");
   });

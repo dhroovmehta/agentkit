@@ -42,7 +42,7 @@ export default function PricingTable() {
           })}
         </ul>
         <a
-          href={bundles[0].gumroadUrl}
+          href={bundles[0].checkoutUrl}
           className="block w-full text-center px-4 py-2.5 bg-secondary text-white text-sm font-medium rounded-lg hover:bg-secondary/90 transition-colors"
         >
           Get Bundle
@@ -90,7 +90,7 @@ export default function PricingTable() {
           ))}
         </ul>
         <a
-          href={allAccessPlan.gumroadUrl}
+          href={allAccessPlan.checkoutUrl}
           className="block w-full text-center px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
         >
           Subscribe Now
@@ -136,7 +136,7 @@ export default function PricingTable() {
           })}
         </ul>
         <a
-          href={bundles[1].gumroadUrl}
+          href={bundles[1].checkoutUrl}
           className="block w-full text-center px-4 py-2.5 bg-secondary text-white text-sm font-medium rounded-lg hover:bg-secondary/90 transition-colors"
         >
           Get Bundle

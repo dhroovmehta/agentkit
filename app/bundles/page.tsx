@@ -75,7 +75,7 @@ export default function BundlesPage() {
                   </div>
 
                   <a
-                    href={bundle.gumroadUrl}
+                    href={bundle.checkoutUrl}
                     className="inline-flex items-center px-6 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-colors"
                   >
                     Get {bundle.name} — ${bundle.price}
@@ -135,7 +135,7 @@ export default function BundlesPage() {
               </ul>
 
               <a
-                href={allAccessPlan.gumroadUrl}
+                href={allAccessPlan.checkoutUrl}
                 className="inline-flex items-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Subscribe — ${allAccessPlan.price}/month

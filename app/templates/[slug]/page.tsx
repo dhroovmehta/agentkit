@@ -7,21 +7,45 @@ export function generateStaticParams() {
   return templates.map((t) => ({ slug: t.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const template = getTemplateBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const template = getTemplateBySlug(slug);
   if (!template) return {};
+  const ogImageUrl = `https://agentkit-sandy.vercel.app/og/${template.slug}.png`;
   return {
     title: `${template.name} — AgentKit`,
     description: template.description,
+    openGraph: {
+      title: `${template.name} — AgentKit`,
+      description: template.tagline,
+      url: `https://agentkit-sandy.vercel.app/templates/${template.slug}`,
+      siteName: "AgentKit",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${template.name} — ${template.tagline}`,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${template.name} — AgentKit`,
+      description: template.tagline,
+      images: [ogImageUrl],
+    },
   };
 }
 
-export default function TemplatePage({
+export default async function TemplatePage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const template = getTemplateBySlug(params.slug);
+  const { slug } = await params;
+  const template = getTemplateBySlug(slug);
   if (!template) notFound();
 
   return (
@@ -72,7 +96,7 @@ export default function TemplatePage({
 
         {/* CTA */}
         <a
-          href={template.gumroadUrl}
+          href={template.checkoutUrl}
           className="inline-flex items-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors mb-12"
         >
           {template.isFree ? "Download Free" : `Buy Now — $${template.price}`}
@@ -181,7 +205,7 @@ export default function TemplatePage({
         {/* Bottom CTA */}
         <div className="text-center">
           <a
-            href={template.gumroadUrl}
+            href={template.checkoutUrl}
             className="inline-flex items-center px-8 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg"
           >
             {template.isFree

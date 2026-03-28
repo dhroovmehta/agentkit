@@ -11,7 +11,7 @@ export interface Template {
   features: string[];
   useCases: string[];
   setupTime: string;
-  gumroadUrl: string;
+  checkoutUrl: string;
   isFree: boolean;
 }
 
@@ -23,7 +23,7 @@ export interface Bundle {
   savings: string;
   description: string;
   templateIds: number[];
-  gumroadUrl: string;
+  checkoutUrl: string;
 }
 
 export const templates: Template[] = [
@@ -59,7 +59,7 @@ export const templates: Template[] = [
       "Small agency owners wearing too many hats",
     ],
     setupTime: "25-30 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/e2cd0183-03c5-46eb-a5e0-a7b502c3f641",
     isFree: true,
   },
   {
@@ -94,7 +94,7 @@ export const templates: Template[] = [
       "Newsletter writers wanting more distribution",
     ],
     setupTime: "15-20 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/21bdecfd-5cae-47f8-bfd7-fbf0d95850ea",
     isFree: false,
   },
   {
@@ -129,7 +129,7 @@ export const templates: Template[] = [
       "Solo founders drowning in support emails",
     ],
     setupTime: "20-25 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/ed392e23-f610-442e-8de2-c51c0b01f6f5",
     isFree: false,
   },
   {
@@ -164,7 +164,7 @@ export const templates: Template[] = [
       "Consultants building a pipeline",
     ],
     setupTime: "25-30 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/834571d1-8e69-4b1b-9b85-44d92552a455",
     isFree: false,
   },
   {
@@ -199,7 +199,7 @@ export const templates: Template[] = [
       "Investors tracking portfolio company markets",
     ],
     setupTime: "15-20 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/ffe8fbf5-1eab-4101-91c5-5e1f94f17fb4",
     isFree: false,
   },
   {
@@ -234,7 +234,7 @@ export const templates: Template[] = [
       "Personal brand builders",
     ],
     setupTime: "20-25 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/bc5d1c2b-d4fe-407d-b451-a897bbe70cda",
     isFree: false,
   },
   {
@@ -269,7 +269,7 @@ export const templates: Template[] = [
       "Contractors managing project expenses",
     ],
     setupTime: "15-20 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/611322cf-b75a-41d4-9c3a-29fa44b87210",
     isFree: false,
   },
   {
@@ -304,7 +304,7 @@ export const templates: Template[] = [
       "Agency owners scaling their team",
     ],
     setupTime: "20-25 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/66426c83-6cec-4dde-adf7-094e02e46f3b",
     isFree: false,
   },
   {
@@ -340,7 +340,7 @@ export const templates: Template[] = [
       "Marketing teams without dedicated SEO writers",
     ],
     setupTime: "20-25 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/bf0b3299-ceff-482a-bb92-c288c88adea0",
     isFree: false,
   },
   {
@@ -375,7 +375,7 @@ export const templates: Template[] = [
       "Investors monitoring portfolio company landscapes",
     ],
     setupTime: "15-20 minutes",
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/3ddebea1-facc-4b40-aad0-b425e7463f9e",
     isFree: false,
   },
 ];
@@ -390,7 +390,7 @@ export const bundles: Bundle[] = [
     description:
       "Everything a solo founder needs to automate their business. Covers operations, content, sales, and social media management.",
     templateIds: [1, 2, 4, 6],
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/82c81769-fd2c-473b-bbb4-692b611c8dc4",
   },
   {
     id: "agency",
@@ -401,7 +401,7 @@ export const bundles: Bundle[] = [
     description:
       "Built for agency owners managing multiple clients. Covers content production, outreach, social media, SEO, and competitive monitoring.",
     templateIds: [2, 4, 6, 9, 10],
-    gumroadUrl: "#",
+    checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/18a3c5ab-b034-4c34-97df-647c990b8734",
   },
 ];
 
@@ -418,7 +418,7 @@ export const allAccessPlan = {
     "Template update notifications",
     "Community access (coming soon)",
   ],
-  gumroadUrl: "#",
+  checkoutUrl: "https://rightfullyyours.lemonsqueezy.com/checkout/buy/d7074af9-4912-4abf-9b30-b693853b58f0",
 };
 
 export function getTemplateBySlug(slug: string): Template | undefined {
